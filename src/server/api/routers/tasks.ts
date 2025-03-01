@@ -39,7 +39,7 @@ export const tasksRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const task = await ctx.db
+      await ctx.db
         .update(tasks)
         .set({
           completed: !input.completed,
