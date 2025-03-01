@@ -21,6 +21,38 @@ export function TaskList({
     return courses.find((course) => course.id === courseId);
   };
 
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    const day = d.getDate().toString().padStart(2, "0");
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const getDaysRemaining = (dueDate: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(dueDate);
+    due.setHours(0, 0, 0, 0);
+
+    const diffTime = due.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return { text: "Vencida", emoji: "⚠️", isOverdue: true };
+    } else if (diffDays === 0) {
+      return { text: "Vence hoy", emoji: "⏰", isOverdue: false };
+    } else if (diffDays === 1) {
+      return { text: "Vence mañana", emoji: "📅", isOverdue: false };
+    } else {
+      return {
+        text: `${diffDays} días restantes`,
+        emoji: "📆",
+        isOverdue: false,
+      };
+    }
+  };
+
   if (tasks.length === 0) {
     return (
       <div className="py-8 text-center text-muted-foreground">
@@ -66,9 +98,14 @@ export function TaskList({
                   {course?.name}
                 </Badge>
                 {task.dueDate && (
-                  <span className="text-xs text-muted-foreground">
-                    Fecha límite: {task.dueDate?.toLocaleDateString()}
-                  </span>
+                  <Badge
+                    variant="secondary"
+                    className={`text-xs ${getDaysRemaining(task.dueDate).isOverdue ? "text-red-500" : ""}`}
+                  >
+                    {formatDate(task.dueDate)} -{" "}
+                    {getDaysRemaining(task.dueDate).emoji}{" "}
+                    {getDaysRemaining(task.dueDate).text}
+                  </Badge>
                 )}
               </div>
             </div>

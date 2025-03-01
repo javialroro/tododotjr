@@ -51,11 +51,30 @@ export function useTodoApp() {
     courseId: string;
     dueDate?: string;
   }) => {
+    let dueDate = null;
+    if (data.dueDate) {
+      // Creamos la fecha usando los componentes locales
+      const [year, month, day] = data.dueDate.split("-");
+      if (year && month && day) {
+        // Creamos la fecha usando la zona horaria local
+        dueDate = new Date(
+          parseInt(year),
+          parseInt(month) - 1,
+          parseInt(day),
+          23,
+          59,
+          59,
+          999,
+        );
+      }
+    }
+    console.log("Due Date being sent:", dueDate);
+
     void createTask.mutate({
       userId,
       title: data.title,
       courseId: Number(data.courseId),
-      dueDate: data.dueDate ? new Date(data.dueDate) : null,
+      dueDate,
     });
   };
 

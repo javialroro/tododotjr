@@ -23,10 +23,12 @@ export const tasksRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("Due Date received:", input.dueDate);
       const task = await ctx.db.insert(tasks).values({
         userId: input.userId,
         title: input.title,
         courseId: input.courseId,
+        dueDate: input.dueDate,
       });
       return task;
     }),
