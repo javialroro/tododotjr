@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import type { Course } from "../types";
+import { useState } from "react";
 
 interface TaskFormProps {
   courses: Course[];
@@ -17,6 +18,7 @@ interface TaskFormProps {
     courseId: string;
     dueDate?: string;
   }) => void;
+  isLoading?: boolean;
 }
 
 export function TaskForm({ courses, onSubmit }: TaskFormProps) {
@@ -52,7 +54,7 @@ export function TaskForm({ courses, onSubmit }: TaskFormProps) {
         </SelectTrigger>
         <SelectContent>
           {courses.map((course) => (
-            <SelectItem key={course.id} value={course.id}>
+            <SelectItem key={course.id} value={course.id.toString()}>
               <div className="flex items-center gap-2">
                 <div className={`h-3 w-3 rounded-full ${course.color}`}></div>
                 {course.name}

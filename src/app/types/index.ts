@@ -1,13 +1,15 @@
 export type Course = {
-  id: string;
+  id: number;
   name: string;
   color: string;
 };
 
 export type Task = {
-  id: string;
+  id: number;
   title: string;
   completed: boolean;
-  courseId: string;
-  dueDate?: string;
+  courseId: number;
+  dueDate: Date | null;
+  createdAt: Date;
+  userId: string;
 };

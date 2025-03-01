@@ -1,35 +1,47 @@
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { ColorPicker } from "./ColorPicker";
 
 interface CourseFormProps {
-  onSubmit: (name: string) => void;
+  onSubmit: (data: { name: string; color: string }) => void;
   onCancel: () => void;
 }
 
 export function CourseForm({ onSubmit, onCancel }: CourseFormProps) {
   const [name, setName] = useState("");
+  const [color, setColor] = useState("bg-blue-500");
 
   const handleSubmit = () => {
     if (name.trim() === "") return;
-    onSubmit(name.trim());
+    onSubmit({ name: name.trim(), color });
     setName("");
+    setColor("bg-blue-500");
   };
 
   return (
-    <div className="mt-2 flex gap-2">
-      <Input
-        placeholder="Nombre del curso"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="flex-grow"
-      />
-      <Button onClick={handleSubmit} variant="outline">
-        Añadir
-      </Button>
-      <Button onClick={onCancel} variant="ghost">
-        Cancelar
-      </Button>
+    <div className="space-y-4 rounded-lg border p-4">
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-muted-foreground">
+          Nombre del curso
+        </label>
+        <Input
+          placeholder="Ej: Matemáticas, Física, etc."
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
+
+      <ColorPicker selected={color} onSelect={setColor} />
+
+      <div className="flex justify-end gap-2 pt-2">
+        <Button onClick={onCancel} variant="ghost">
+          Cancelar
+        </Button>
+        <Button onClick={handleSubmit} variant="default">
+          Guardar curso
+        </Button>
+      </div>
     </div>
   );
 }

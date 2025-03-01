@@ -6,8 +6,9 @@ import type { Course, Task } from "../types";
 interface TaskListProps {
   tasks: Task[];
   courses: Course[];
-  onToggleComplete: (taskId: string) => void;
-  onDelete: (taskId: string) => void;
+  onToggleComplete: (taskId: number, completed: boolean) => void;
+  onDelete: (taskId: number) => void;
+  isLoading?: boolean;
 }
 
 export function TaskList({
@@ -16,7 +17,7 @@ export function TaskList({
   onToggleComplete,
   onDelete,
 }: TaskListProps) {
-  const getCourseById = (courseId: string) => {
+  const getCourseById = (courseId: number) => {
     return courses.find((course) => course.id === courseId);
   };
 
@@ -41,7 +42,7 @@ export function TaskList({
               variant="ghost"
               size="icon"
               className="mr-2 h-6 w-6 rounded-full p-0"
-              onClick={() => onToggleComplete(task.id)}
+              onClick={() => onToggleComplete(task.id, task.completed)}
             >
               {task.completed ? (
                 <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -66,7 +67,7 @@ export function TaskList({
                 </Badge>
                 {task.dueDate && (
                   <span className="text-xs text-muted-foreground">
-                    Fecha límite: {task.dueDate}
+                    Fecha límite: {task.dueDate?.toLocaleDateString()}
                   </span>
                 )}
               </div>

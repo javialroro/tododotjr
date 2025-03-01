@@ -9,109 +9,114 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { TaskForm } from "./_components/TaskForm";
 import { CourseForm } from "./_components/CourseForm";
 import { TaskList } from "./_components/TaskList";
+import { api } from "~/trpc/react";
 import type { Course, Task } from "./types";
+import { cn } from "~/lib/utils";
 
-// TODO: Mover esto a la base de datos
-const initialCourses: Course[] = [
-  { id: "math101", name: "Matemáticas", color: "bg-blue-500" },
-  { id: "phys101", name: "Física", color: "bg-red-500" },
-  { id: "chem101", name: "Química", color: "bg-green-500" },
-  { id: "cs101", name: "Programación", color: "bg-purple-500" },
-  { id: "eng101", name: "Inglés", color: "bg-yellow-500" },
-];
-
-// TODO: Mover esto a la base de datos
-const initialTasks: Task[] = [
-  {
-    id: "1",
-    title: "Estudiar para el examen de cálculo",
-    completed: false,
-    courseId: "math101",
-    dueDate: "2025-03-05",
-  },
-  {
-    id: "2",
-    title: "Completar laboratorio de física",
-    completed: true,
-    courseId: "phys101",
-    dueDate: "2025-03-02",
-  },
-  {
-    id: "3",
-    title: "Leer capítulo 5 de química orgánica",
-    completed: false,
-    courseId: "chem101",
-    dueDate: "2025-03-10",
-  },
-];
+interface FilterState {
+  status: "all" | "completed" | "pending";
+  courseId: string | "all";
+}
 
 export default function TodoApp() {
-  // TODO: Reemplazar con llamadas a la API
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [filter, setFilter] = useState<FilterState>({
+    status: "all",
+    courseId: "all",
+  });
   const [showAddCourse, setShowAddCourse] = useState(false);
 
-  // TODO: Implementar con la API
+  // Obtener el userId (deberás implementar esto según tu sistema de autenticación)
+  const userId = "user123"; // Temporal - reemplazar con tu sistema de auth
+
+  // Queries y Mutations
+  const { data: tasks, refetch: refetchTasks } = api.tasks.getMyTasks.useQuery({
+    userId,
+  });
+
+  const { data: courses, refetch: refetchCourses } =
+    api.courses.getMyCourses.useQuery({
+      userId,
+    });
+
+  const createTask = api.tasks.createTask.useMutation({
+    onSuccess: () => {
+      refetchTasks();
+    },
+  });
+
+  const toggleTask = api.tasks.toggleTaskCompletion.useMutation({
+    onSuccess: () => {
+      refetchTasks();
+    },
+  });
+
+  const deleteTask = api.tasks.deleteTask.useMutation({
+    onSuccess: () => {
+      refetchTasks();
+    },
+  });
+
+  const createCourse = api.courses.createCourse.useMutation({
+    onSuccess: () => {
+      setShowAddCourse(false);
+      refetchCourses();
+    },
+  });
+
+  // Handlers
   const addTask = (data: {
     title: string;
     courseId: string;
     dueDate?: string;
   }) => {
-    const newTask: Task = {
-      id: Date.now().toString(),
+    createTask.mutate({
+      userId,
       title: data.title,
-      completed: false,
-      courseId: data.courseId,
-      dueDate: data.dueDate,
-    };
-
-    setTasks([...tasks, newTask]);
+      courseId: Number(data.courseId),
+      dueDate: data.dueDate ? new Date(data.dueDate) : null,
+    });
   };
 
-  // TODO: Implementar con la API
-  const toggleTaskCompletion = (taskId: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task,
-      ),
-    );
+  const toggleTaskCompletion = (taskId: number, completed: boolean) => {
+    toggleTask.mutate({
+      userId,
+      taskId,
+      completed,
+    });
   };
 
-  // TODO: Implementar con la API
-  const deleteTask = (taskId: string) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
+  const handleDeleteTask = (taskId: number) => {
+    deleteTask.mutate({
+      userId,
+      taskId,
+    });
   };
 
-  // TODO: Implementar con la API
-  const addCourse = (name: string) => {
-    const colors = [
-      "bg-blue-500",
-      "bg-red-500",
-      "bg-green-500",
-      "bg-purple-500",
-      "bg-yellow-500",
-      "bg-pink-500",
-      "bg-indigo-500",
-    ];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-    const newCourse: Course = {
-      id: Date.now().toString(),
-      name,
-      color: randomColor || "bg-gray-500",
-    };
-
-    setCourses([...courses, newCourse]);
-    setShowAddCourse(false);
+  const addCourse = (data: { name: string; color: string }) => {
+    createCourse.mutate({
+      userId,
+      name: data.name,
+      color: data.color,
+    });
   };
 
-  const filteredTasks = tasks.filter((task) => {
-    if (activeFilter === "all") return true;
-    if (activeFilter === "completed") return task.completed;
-    if (activeFilter === "pending") return !task.completed;
-    return task.courseId === activeFilter;
-  });
+  // Actualizar la función de filtrado
+  const filteredTasks =
+    tasks?.filter((task) => {
+      const statusMatch =
+        filter.status === "all"
+          ? true
+          : filter.status === "completed"
+            ? task.completed
+            : !task.completed;
+
+      const courseMatch =
+        filter.courseId === "all"
+          ? true
+          : task.courseId.toString() === filter.courseId;
+
+      return statusMatch && courseMatch;
+    }) ?? [];
 
   return (
     <div className="container mx-auto max-w-4xl p-4">
@@ -124,7 +129,11 @@ export default function TodoApp() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
-            <TaskForm courses={courses} onSubmit={addTask} />
+            <TaskForm
+              courses={courses ?? []}
+              onSubmit={addTask}
+              isLoading={createTask.isPending}
+            />
 
             {/* Course management */}
             <div className="mt-2">
@@ -150,8 +159,13 @@ export default function TodoApp() {
 
       <Tabs
         defaultValue="all"
-        value={activeFilter}
-        onValueChange={setActiveFilter}
+        value={filter.status}
+        onValueChange={(value) =>
+          setFilter((prev) => ({
+            ...prev,
+            status: value as "all" | "completed" | "pending",
+          }))
+        }
         className="w-full"
       >
         <TabsList className="mb-4 grid grid-cols-3">
@@ -161,30 +175,71 @@ export default function TodoApp() {
         </TabsList>
 
         <div className="mb-4 flex flex-wrap gap-2">
-          {courses.map((course) => (
+          <Badge
+            variant={filter.courseId === "all" ? "default" : "outline"}
+            className="cursor-pointer"
+            onClick={() => setFilter((prev) => ({ ...prev, courseId: "all" }))}
+          >
+            Todos los cursos
+          </Badge>
+          {(courses ?? []).map((course) => (
             <Badge
               key={course.id}
-              variant={activeFilter === course.id ? "default" : "outline"}
-              className={`cursor-pointer ${
-                activeFilter === course.id
-                  ? course.color.replace("bg-", "bg-opacity-90")
-                  : ""
-              }`}
-              onClick={() => setActiveFilter(course.id)}
+              variant={
+                filter.courseId === course.id.toString() ? "default" : "outline"
+              }
+              className={cn(
+                "cursor-pointer transition-colors",
+                filter.courseId === course.id.toString()
+                  ? `${course.color.split(" ")[0]} text-white hover:bg-opacity-90`
+                  : `hover:${course.color.split(" ")[0]} hover:text-white border-${course.color.split(" ")[1]}`,
+              )}
+              onClick={() =>
+                setFilter((prev) => ({
+                  ...prev,
+                  courseId: course.id.toString(),
+                }))
+              }
             >
               {course.name}
             </Badge>
           ))}
         </div>
 
-        <TabsContent value={activeFilter} className="mt-0">
+        <TabsContent value={filter.status} className="mt-0">
           <Card>
             <CardContent className="p-4">
+              <div className="mb-4">
+                <p className="text-sm text-muted-foreground">
+                  Mostrando:{" "}
+                  <span className="font-medium">
+                    {filter.status === "all"
+                      ? "Todas las tareas"
+                      : filter.status === "completed"
+                        ? "Tareas completadas"
+                        : "Tareas pendientes"}
+                  </span>
+                  {filter.courseId !== "all" && (
+                    <>
+                      {" "}
+                      de{" "}
+                      <span className="font-medium">
+                        {
+                          courses?.find(
+                            (c) => c.id.toString() === filter.courseId,
+                          )?.name
+                        }
+                      </span>
+                    </>
+                  )}
+                </p>
+              </div>
               <TaskList
                 tasks={filteredTasks}
-                courses={courses}
+                courses={courses ?? []}
                 onToggleComplete={toggleTaskCompletion}
-                onDelete={deleteTask}
+                onDelete={handleDeleteTask}
+                isLoading={tasks === undefined}
               />
             </CardContent>
           </Card>
