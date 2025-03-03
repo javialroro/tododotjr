@@ -92,8 +92,8 @@ export function TaskList({
               </p>
               <div className="mt-1 flex items-center gap-2">
                 <Badge
-                  variant="outline"
-                  className={`${course?.color} bg-opacity-20 text-xs`}
+                  variant="default"
+                  className={`${course?.color} text-white text-xs`}
                 >
                   {course?.name}
                 </Badge>
