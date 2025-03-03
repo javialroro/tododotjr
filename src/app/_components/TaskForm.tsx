@@ -66,6 +66,7 @@ export function TaskForm({ courses, onSubmit }: TaskFormProps) {
       <Input
         type="date"
         value={dueDate}
+        placeholder="Fecha de entrega"
         onChange={(e) => setDueDate(e.target.value)}
         className="w-full sm:w-[180px]"
       />
