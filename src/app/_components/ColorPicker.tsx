@@ -1,53 +1,43 @@
-import { Check } from "lucide-react";
 import { cn } from "~/lib/utils";
-
-const colors = [
-  { name: "Rojo", value: "bg-red-500 text-red-500" },
-  { name: "Verde", value: "bg-green-500 text-green-500" },
-  { name: "Azul", value: "bg-blue-500 text-blue-500" },
-  { name: "Amarillo", value: "bg-yellow-500 text-yellow-500" },
-  { name: "Morado", value: "bg-purple-500 text-purple-500" },
-  { name: "Rosa", value: "bg-pink-500 text-pink-500" },
-  { name: "Naranja", value: "bg-orange-500 text-orange-500" },
-  { name: "Cyan", value: "bg-cyan-500 text-cyan-500" },
-  { name: "Índigo", value: "bg-indigo-500 text-indigo-500" },
-  { name: "Esmeralda", value: "bg-emerald-500 text-emerald-500" },
-  { name: "Violeta", value: "bg-violet-500 text-violet-500" },
-  { name: "Lima", value: "bg-lime-500 text-lime-500" },
-  { name: "Ámbar", value: "bg-amber-500 text-amber-500" },
-  { name: "Teal", value: "bg-teal-500 text-teal-500" },
-  { name: "Fucsia", value: "bg-fuchsia-500 text-fuchsia-500" },
-  { name: "Cielo", value: "bg-sky-500 text-sky-500" }
-];
 
 interface ColorPickerProps {
   selected: string;
   onSelect: (color: string) => void;
 }
 
+const colors = [
+  "bg-red-500",
+  "bg-orange-500",
+  "bg-amber-500",
+  "bg-yellow-500",
+  "bg-lime-500",
+  "bg-green-500",
+  "bg-emerald-500",
+  "bg-teal-500",
+  "bg-cyan-500",
+  "bg-purple-500",
+  "bg-fuchsia-500",
+  "bg-pink-500"
+];
+
 export function ColorPicker({ selected, onSelect }: ColorPickerProps) {
   return (
-    <div className="rounded-lg border p-3">
-      <label className="mb-2 block text-sm font-medium text-muted-foreground">
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-muted-foreground">
         Color del curso
       </label>
-      <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
+      <div className="grid grid-cols-6 gap-x-4 gap-y-2 rounded-lg border p-3">
         {colors.map((color) => (
           <button
-            key={color.value}
+            key={color}
             className={cn(
-              "group relative h-8 w-8 overflow-hidden rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-              color.value,
-              selected === color.value && "ring-2 ring-ring ring-offset-2",
+              "h-6 w-6 rounded-full shadow-sm ring-1 ring-border transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring",
+              color,
+              selected === color && "scale-110 ring-2 ring-ring",
             )}
-            onClick={() => onSelect(color.value)}
-            title={color.name}
-          >
-            {selected === color.value && (
-              <Check className="absolute inset-0 m-auto h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" />
-            )}
-            <span className="sr-only">{color.name}</span>
-          </button>
+            onClick={() => onSelect(color)}
+            type="button"
+          />
         ))}
       </div>
     </div>

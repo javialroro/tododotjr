@@ -6,7 +6,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { courses } from "~/server/db/schema";
+import { courses, tasks } from "~/server/db/schema";
 
 export const coursesRouter = createTRPCRouter({
   getMyCourses: protectedProcedure.query(async ({ ctx }) => {
@@ -19,9 +19,7 @@ export const coursesRouter = createTRPCRouter({
     return coursesItems;
   }),
   createCourse: protectedProcedure
-    .input(
-        z.object({ name: z.string(), color: z.string() }),
-    )
+    .input(z.object({ name: z.string(), color: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const course = await ctx.db.insert(courses).values({
         userId: ctx.userId,
@@ -33,6 +31,14 @@ export const coursesRouter = createTRPCRouter({
   deleteCourse: protectedProcedure
     .input(z.object({ courseId: z.number() }))
     .mutation(async ({ ctx, input }) => {
+      // Primero borramos todas las tareas asociadas al curso
+      await ctx.db
+        .delete(tasks)
+        .where(
+          and(eq(tasks.courseId, input.courseId), eq(tasks.userId, ctx.userId)),
+        );
+
+      // Luego borramos el curso
       const course = await ctx.db
         .delete(courses)
         .where(

@@ -13,9 +13,9 @@ export function useTodoApp() {
   });
   const [showAddCourse, setShowAddCourse] = useState(false);
 
-
   // Queries
-  const { data: tasks, refetch: refetchTasks } = api.tasks.getMyTasks.useQuery();
+  const { data: tasks, refetch: refetchTasks } =
+    api.tasks.getMyTasks.useQuery();
 
   const { data: courses, refetch: refetchCourses } =
     api.courses.getMyCourses.useQuery();
@@ -37,6 +37,13 @@ export function useTodoApp() {
     onSuccess: () => {
       setShowAddCourse(false);
       refetchCourses();
+    },
+  });
+
+  const deleteCourse = api.courses.deleteCourse.useMutation({
+    onSuccess: () => {
+      refetchCourses();
+      refetchTasks();
     },
   });
 
@@ -92,6 +99,12 @@ export function useTodoApp() {
     });
   };
 
+  const handleDeleteCourse = (courseId: number) => {
+    void deleteCourse.mutate({
+      courseId,
+    });
+  };
+
   const filteredTasks =
     tasks?.filter((task) => {
       const statusMatch =
@@ -130,5 +143,6 @@ export function useTodoApp() {
     toggleTaskCompletion,
     handleDeleteTask,
     addCourse,
+    handleDeleteCourse,
   };
 }

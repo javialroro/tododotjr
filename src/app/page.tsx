@@ -12,6 +12,7 @@ import { useTodoApp } from "~/hooks/useTodoApp";
 import { TopNav } from "./_components/TopNav";
 import { ProtectedRoute } from "./_components/ProtectedRoute";
 import type { FilterState } from "~/hooks/useTodoApp";
+import { TodoAppContent } from "./_components/TodoAppContent";
 
 export default function TodoApp() {
   const {
@@ -33,63 +34,8 @@ export default function TodoApp() {
 
   return (
     <ProtectedRoute>
-      <div className="container mx-auto max-w-4xl p-4">
-        <TopNav />
-        <Card className="mb-8">
-          <Header />
-          <CardContent>
-            <div className="flex flex-col gap-4">
-              <TaskForm
-                courses={courses ?? []}
-                onSubmit={addTask}
-                isLoading={isCreatingTask}
-              />
-              <CourseManagement
-                showAddCourse={showAddCourse}
-                onAddCourse={addCourse}
-                onToggleForm={setShowAddCourse}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Tabs
-          defaultValue="pending"
-          value={filter.status}
-          onValueChange={(value) =>
-            setFilter((prev) => ({
-              ...prev,
-              status: value as "all" | "completed" | "pending",
-            }))
-          }
-          className="w-full"
-        >
-          <TaskFilters
-            filter={filter}
-            courses={courses ?? []}
-            onFilterChange={setFilter}
-          />
-
-          <TabsContent value={filter.status} className="mt-0">
-            <Card>
-              <CardContent className="p-4">
-                <FilterDescription
-                  status={filter.status}
-                  courseId={filter.courseId}
-                  courses={courses ?? []}
-                />
-                <TaskList
-                  tasks={filteredTasks}
-                  courses={courses ?? []}
-                  onToggleComplete={toggleTaskCompletion}
-                  onDelete={handleDeleteTask}
-                  isLoading={isLoading}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+      <TopNav />
+      <TodoAppContent />
     </ProtectedRoute>
   );
 }
