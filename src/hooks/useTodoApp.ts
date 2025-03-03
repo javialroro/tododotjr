@@ -13,17 +13,12 @@ export function useTodoApp() {
   });
   const [showAddCourse, setShowAddCourse] = useState(false);
 
-  const userId = "user123"; // TODO: Replace with auth
 
   // Queries
-  const { data: tasks, refetch: refetchTasks } = api.tasks.getMyTasks.useQuery({
-    userId,
-  });
+  const { data: tasks, refetch: refetchTasks } = api.tasks.getMyTasks.useQuery();
 
   const { data: courses, refetch: refetchCourses } =
-    api.courses.getMyCourses.useQuery({
-      userId,
-    });
+    api.courses.getMyCourses.useQuery();
 
   // Mutations
   const createTask = api.tasks.createTask.useMutation({
@@ -71,7 +66,6 @@ export function useTodoApp() {
     console.log("Due Date being sent:", dueDate);
 
     void createTask.mutate({
-      userId,
       title: data.title,
       courseId: Number(data.courseId),
       dueDate,
@@ -80,7 +74,6 @@ export function useTodoApp() {
 
   const toggleTaskCompletion = (taskId: number, completed: boolean) => {
     void toggleTask.mutate({
-      userId,
       taskId,
       completed,
     });
@@ -88,14 +81,12 @@ export function useTodoApp() {
 
   const handleDeleteTask = (taskId: number) => {
     void deleteTask.mutate({
-      userId,
       taskId,
     });
   };
 
   const addCourse = (data: { name: string; color: string }) => {
     void createCourse.mutate({
-      userId,
       name: data.name,
       color: data.color,
     });

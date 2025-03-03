@@ -28,7 +28,7 @@ export default function TodoApp() {
     addCourse,
   } = useTodoApp();
 
-  if (isLoading) return <div>Loading...</div>;
+  //if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="container mx-auto max-w-4xl p-4">
