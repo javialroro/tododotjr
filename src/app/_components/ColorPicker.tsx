@@ -17,7 +17,7 @@ const colors = [
   "bg-cyan-500",
   "bg-purple-500",
   "bg-fuchsia-500",
-  "bg-pink-500"
+  "bg-pink-500",
 ];
 
 export function ColorPicker({ selected, onSelect }: ColorPickerProps) {
