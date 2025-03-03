@@ -21,10 +21,16 @@ interface TaskFormProps {
   isLoading?: boolean;
 }
 
-export function TaskForm({ courses, onSubmit }: TaskFormProps) {
+export function TaskForm({ courses, onSubmit, isLoading }: TaskFormProps) {
   const [title, setTitle] = useState("");
   const [courseId, setCourseId] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  });
 
   const handleSubmit = () => {
     if (title.trim() === "" || courseId === "") return;
@@ -36,7 +42,11 @@ export function TaskForm({ courses, onSubmit }: TaskFormProps) {
     });
 
     setTitle("");
-    setDueDate("");
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    setDueDate(`${year}-${month}-${day}`);
     setCourseId("");
   };
 
@@ -66,11 +76,12 @@ export function TaskForm({ courses, onSubmit }: TaskFormProps) {
       <Input
         type="date"
         value={dueDate}
-        placeholder="Fecha de entrega"
         onChange={(e) => setDueDate(e.target.value)}
         className="w-full sm:w-[180px]"
+        lang="es"
+        data-date-format="dd/mm/yyyy"
       />
-      <Button onClick={handleSubmit}>
+      <Button onClick={handleSubmit} disabled={isLoading}>
         <PlusCircle className="mr-2 h-4 w-4" />
         Añadir
       </Button>
