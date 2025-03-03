@@ -10,6 +10,14 @@ const colors = [
   { name: "Rosa", value: "bg-pink-500 text-pink-500" },
   { name: "Naranja", value: "bg-orange-500 text-orange-500" },
   { name: "Cyan", value: "bg-cyan-500 text-cyan-500" },
+  { name: "Índigo", value: "bg-indigo-500 text-indigo-500" },
+  { name: "Esmeralda", value: "bg-emerald-500 text-emerald-500" },
+  { name: "Violeta", value: "bg-violet-500 text-violet-500" },
+  { name: "Lima", value: "bg-lime-500 text-lime-500" },
+  { name: "Ámbar", value: "bg-amber-500 text-amber-500" },
+  { name: "Teal", value: "bg-teal-500 text-teal-500" },
+  { name: "Fucsia", value: "bg-fuchsia-500 text-fuchsia-500" },
+  { name: "Cielo", value: "bg-sky-500 text-sky-500" }
 ];
 
 interface ColorPickerProps {

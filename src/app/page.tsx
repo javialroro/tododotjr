@@ -9,6 +9,8 @@ import { CourseManagement } from "./_components/CourseManagement";
 import { TaskFilters } from "./_components/TaskFilters";
 import { FilterDescription } from "./_components/FilterDescription";
 import { useTodoApp } from "~/hooks/useTodoApp";
+import { TopNav } from "./_components/TopNav";
+import type { FilterState } from "~/hooks/useTodoApp";
 
 export default function TodoApp() {
   const {
@@ -26,8 +28,11 @@ export default function TodoApp() {
     addCourse,
   } = useTodoApp();
 
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <div className="container mx-auto max-w-4xl p-4">
+      <TopNav />
       <Card className="mb-8">
         <Header />
         <CardContent>
