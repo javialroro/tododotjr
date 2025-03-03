@@ -34,11 +34,21 @@ export function CourseForm({ onSubmit, onCancel }: CourseFormProps) {
 
       <ColorPicker selected={color} onSelect={setColor} />
 
-      <div className="flex justify-end gap-2 pt-2">
-        <Button onClick={onCancel} variant="ghost">
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button
+          onClick={onCancel}
+          variant="ghost"
+          size="sm"
+          className="flex-shrink-0"
+        >
           Cancelar
         </Button>
-        <Button onClick={handleSubmit} variant="default">
+        <Button
+          onClick={handleSubmit}
+          variant="default"
+          size="sm"
+          className="flex-shrink-0"
+        >
           Guardar curso
         </Button>
       </div>
