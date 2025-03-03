@@ -5,7 +5,10 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import {
-  ClerkProvider
+  ClerkProvider,
+  RedirectToSignIn,
+  SignedIn,
+  SignedOut,
 } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
