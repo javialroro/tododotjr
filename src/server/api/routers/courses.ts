@@ -37,7 +37,6 @@ export const coursesRouter = createTRPCRouter({
         .where(
           and(eq(tasks.courseId, input.courseId), eq(tasks.userId, ctx.userId)),
         );
-
       // Luego borramos el curso
       const course = await ctx.db
         .delete(courses)
